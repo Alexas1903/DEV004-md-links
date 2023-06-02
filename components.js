@@ -1,25 +1,28 @@
+import { toAbsolute, getstat, isMD, readFileLinks, getLinks } from "./api.js";
 
-
-import { toAbsolute,getstat,isMD, readFileLinks } from "./api.js";
-
-
-export const mdLinks = (path, opctions) => {
-    const absolutePath = toAbsolute(path);
-    return new Promise((resolve, reject) => {
-      getstat(absolutePath).then((stat) => {
-        if(stat.isFile()){
-          if(isMD(absolutePath)){
+export const mdLinks = (path, options) => {
+  const absolutePath = toAbsolute(path);
+  return new Promise((resolve, reject) => {
+    getstat(absolutePath).then((stat) => {
+      if (stat.isFile()) {
+        if (isMD(absolutePath)) {
           const arrLinks = readFileLinks(absolutePath);
-          reject(new Error('la ruta no existe'));
+          let links = [];
+
+          if (arrLinks) {
+            links = getLinks(absolutePath);
+            resolve(links);
+          } else {
+            reject(new Error("No se pueden obtener los links"));
           }
-          else{
-            resolve (arrLinks);
-            console.log('arrLinks');
-          }
+
+          //console.log("links",links);
+        } else {
+          reject(new Error("El archivo no es un archivo Markdown (.md)"));
         }
-      })
-     
+      } else {
+        reject(new Error("La ruta no existe"));
+      }
     });
-}
-
-
+  });
+};
