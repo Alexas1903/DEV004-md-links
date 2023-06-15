@@ -1,14 +1,14 @@
 import {
   toAbsolute,
-  directoryTrue,
-  // directoryFiles,
   readAndGetFileLinks,
   getstat,
   isMD,
   validateLinks,
-  // readFileLinks,
   getLinks,
+ /* directoryTrue,
+  listDirectory,*/
 } from "./api.js";
+
 export const mdLinks = (path, options) => {
   const absolutePath = toAbsolute(path);
   return new Promise((resolve, reject) => {
@@ -27,36 +27,29 @@ export const mdLinks = (path, options) => {
             })
             .catch((error) => reject(error));
         }
-      } else {
-        reject("Por el momento solo leemos archivos, espera la version 2.0");
-      }
+        else{
+          reject ("por los momentos no leemos directorios");
+        }
+      /*} else if (directoryTrue(absolutePath)) {
+        listDirectory(absolutePath)
+        
+           
+            const arrayFileLinks = listDirectory(absolutePath);
+            console.log(listDirectory,"***********");
+            return arrayFileLinks;
+          };
+      */
+      
+      /*} else if (directoryTrue(route)) {
+        listDirectory(absolutePath)
+        .then(data) => {
+          const arrayFileLinks = getLinks.listDirectory(data, absolutePath);
+          console.log(listDirectory(absolutePath),"***********")
+          return arrayFileLinks;
+*/
+      };
     });
   });
 };
 
-     /* if (options.validate) {
-        const numLinks = links.length;
-        let validatedLinks = 0;
-        //FIXME: cambiar a map y crear un Promise.all. Limitar numero de promesas
-        links.forEach((link) => {
-          fetch(link.href)
-            .then((res) => {
-              link.status = res.status;
-              link.statusMessage = res.statusText;
-              results.push(link);
-            })
-            .catch(() => {
-              link.status = "error";
-              link.statusMessage = "Link not found";
-              results.push(link);
-            })
-            .finally(() => {
-              validatedLinks++;
-              if (validatedLinks === numLinks) {
-                resolve(results);
-              }
-            });
-        });
-      }
-    });
-  });*/
+     

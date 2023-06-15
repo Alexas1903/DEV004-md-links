@@ -1,12 +1,5 @@
 import path from "path";
-import fs, {
-  Stats,
-  readFile,
-  statSync,
-  readdirSync,
-  stat,
-  existsSync,
-} from "fs";
+import fs, { readFile, statSync, existsSync } from "fs";
 
 // path existe
 const isPath = (path) => existsSync(path);
@@ -33,6 +26,22 @@ const getstat = (absolutePath) => {
 const directoryTrue = (route) => {
   return statSync(route).isDirectory();
 };
+
+/*const listDirectory = (absolutePath) => {
+  let readFilePromises = [];
+  const files = readdirSync(absolutePath);
+
+  files.forEach((file) => {
+    const path = `${absolutePath}/${file}`; // concatenamos el path del directorio con el nombre del archivo/directorio
+    if (directoryTrue(path)) {
+      const result = listDirectory(path); // recursividad
+      readFilePromises = readFilePromises.concat(result);
+      console.log(`resultado directorio ${path}`, readFilePromises)
+      return readFilePromises;
+    }
+  });
+};*/
+
 //verifica si los archivos son MD
 const isMD = (file) => {
   return path.extname(file) === ".md";
@@ -43,34 +52,18 @@ const getLinks = (data, absolutePath) => {
   // console.log(data.match(regex), '**************************');
   const match = data.match(regex);
   const links = [];
-  match.map((elem)=>{
+  match.map((elem) => {
     // console.log(elem, '-------------------------');
     links.push({
-            href:  elem.match(/https*?:([^"')\s]+)/)[0], // url encontrada
-            text: elem.match(/\[(.*)\]/)[1], // texto que representa el enlace
-            file: absolutePath, // archivo en el que se encontró el enlace
-          });
-
-  })
+      href: elem.match(/https*?:([^"')\s]+)/)[0], // url encontrada
+      text: elem.match(/\[(.*)\]/)[1], // texto que representa el enlace
+      file: absolutePath, // archivo en el que se encontró el enlace
+    });
+  });
   // console.log(links, 'links++++++++');
   return links;
-
-//   const links = [];
-//   let match;
-//   while ((match = regex.exec(data)) !== null) {
-//     console.log(match, 'mathc');
-//     links.push({
-//       href: match[2], // url encontrada
-//       text: match[1], // texto que representa el enlace
-//       file: absolutePath, // archivo en el que se encontró el enlace
-//     });
-//     return links;
-// //     str.match(/[^!]\[.+?\]\(.+?\)/g);
-// // elm.match(/https*?:([^"')\s]+)/)
-// // elm.match(/\[(.*)\]/)[1]
-//   }
 };
-//se lee y obtiene los links
+
 const readAndGetFileLinks = (file) => {
   return new Promise((resove, reject) => {
     readFile(file, "utf8", function (err, data) {
@@ -91,48 +84,19 @@ const validateLinks = (array) => {
       elem.statusText = res.statusText;
       // console.log(elem, 'xxxxx');
       return elem;
-    })
+    });
   });
   return Promise.all(total);
 };
 
-// lee los archivos del directorio
-// const directoryFiles = (absolutePath) => {
-//   let readFileDir = Promise.resolve([]);
-//   const filesDir = readdirSync(absolutePath);
-
-//   filesDir.forEach((file) => {
-//     const path = `${absolutePath}/${file}`;
-//     if (directoryTrue(path)) {
-//       const result = directoryFiles(path); // recursividad
-//       readFileDir = readFileDir.concat(result);
-//     } else if (isMD(path)) {
-//       readFileDir.push(readFileLinks(path).then((data) => getLinks(data, path)))
-//     }
-//   });
-//   readFileDir = Promise.all(readFileDir)
-//   return Promise.all(readFileDir);
-// };
-
-//opcion existe
-
-//Verificar si validate es verdadero y obtener href,text,file,status,ok.
-
-//Si validate es falso, obtener href,text,file.
-
-//Verificar stats y obtener total y unique.
-
-//Verificar Stats-Validate y obtener total, unique, broken.
-
 export {
   isPath,
   toAbsolute,
-  // readFileLinks,
   getLinks,
   getstat,
   isMD,
-  directoryTrue,
   readAndGetFileLinks,
   validateLinks,
-  // directoryFiles,
+  directoryTrue
+  //listDirectory,
 };
