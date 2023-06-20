@@ -1,28 +1,55 @@
-import { mdLinks } from "./components.js"
+#!/usr/bin/env node
+import { mdLinks } from "./components.js";
 import chalk from "chalk";
+import { argv } from "process"; // libreria para leer argumentos de la terminal
+// importo  mdLinks
+console.log("hola");
 
-const path = "./prueba/prueba1.md";
- //const path = "./README.md";
+const CLI = () => {
+  const path = argv[2];
+  const validate = argv.includes("--validate");
+  const stats = argv.includes("--stats");
+  const help = argv.includes("--help");
+
+  if (argv[2] === undefined) {
+    console.log(
+      chalk.cyan(`Por favor, entrar a path ${chalk.yellow("--help")}.`)
+    );
+  } else if (help) {
+    {
+      console.log(chalk("Usage: md-link <path-to-file> [options]"));
+      console.log(chalk.bold("\nOptions:"));
+      console.log(chalk.green("\t only path"));
+      console.log(chalk.green("\t--validate"));
+      console.log(chalk.green("\t--stats"));
+      console.log(chalk.green("\t--validate --stats"));
+      console.log("\n");
+
+      return;
+    }
+  } else if (path) {
+    mdLinks(path).then((links) =>
+      console.log(links))
+      .catch((err) => console.error(err));
+    
+  } else if (path && validate ){
+   mdLinks(path, {validate: true}).then((links)=>
+   console.log(links))
+   .catch((err) => console.error(err));
+  }
+
+  
+  
+}
+CLI()
+//const path = "./prueba/prueba1.md";
+/*const path = "./README.md";
 mdLinks(path)
-.then((links) => console.log(links))
+  .then((links) => console.log(links))
   .catch((err) => console.error(err));
 
-console.log(chalk.blue('*********************mdLinksByAlexa************************************\n'));
-
-/*calcula los stats
-export const calculateStats = (links, validate = false) => {
-  const count = links.length;
-  const linksUniqueArray = [...new Set(links.map(link => link.href))]
-  const stats = {
-    total: count,
-    unique: linksUniqueArray.length
-  }
-
-  if(validate) {
-    stats.broken = links.reduce((accumulator, currentElement) => {
-      accumulator += currentElement.status < 400 || currentElement.status == 'Es un enlace interno' ? 0 : 1;
-      return accumulator;
-    }, 0)
-  }
-return stats;
-}*/
+console.log(
+  chalk.blue(
+    "*********************mdLinksByAlexa************************************\n"
+  )
+);*/

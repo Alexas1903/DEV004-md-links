@@ -1,15 +1,10 @@
 import path from "path";
-import fs, { readFile, statSync, existsSync } from "fs";
+import fs, { readFile, statSync, existsSync, readdirSync } from "fs";
+import fetch from "node-fetch";
 
 // path existe
 const isPath = (path) => existsSync(path);
 
-//convierte la ruta a absoluta
-const toAbsolute = (relativePath) => {
-  return path.isAbsolute(relativePath)
-    ? relativePath
-    : path.resolve(relativePath);
-};
 
 //obtenemos las estadisticas de la ruta para verificar si es un archivo
 const getstat = (absolutePath) => {
@@ -23,29 +18,15 @@ const getstat = (absolutePath) => {
   });
 };
 // es directorio
-const directoryTrue = (route) => {
-  return statSync(route).isDirectory();
+const directoryTrue = (absolutePath) => {
+  return statSync(absolutePath).isDirectory();
 };
-
-/*const listDirectory = (absolutePath) => {
-  let readFilePromises = [];
-  const files = readdirSync(absolutePath);
-
-  files.forEach((file) => {
-    const path = `${absolutePath}/${file}`; // concatenamos el path del directorio con el nombre del archivo/directorio
-    if (directoryTrue(path)) {
-      const result = listDirectory(path); // recursividad
-      readFilePromises = readFilePromises.concat(result);
-      console.log(`resultado directorio ${path}`, readFilePromises)
-      return readFilePromises;
-    }
-  });
-};*/
 
 //verifica si los archivos son MD
 const isMD = (file) => {
   return path.extname(file) === ".md";
 };
+
 //Leer archivos Md y obtener links href, text, file.
 const getLinks = (data, absolutePath) => {
   const regex = /\[(?<text>.*?)\]\((?<url>https?:\/\/[^\s)]+)(?<!#)\)/g;
@@ -63,7 +44,7 @@ const getLinks = (data, absolutePath) => {
   // console.log(links, 'links++++++++');
   return links;
 };
-
+//lee y 
 const readAndGetFileLinks = (file) => {
   return new Promise((resove, reject) => {
     readFile(file, "utf8", function (err, data) {
@@ -75,6 +56,29 @@ const readAndGetFileLinks = (file) => {
     });
   });
 };
+//obtiene la lista de directorios
+/*const liDirectory = (absolutePath) => { //C:\Users\alexa\OneDrive\Escritorio\proyecto 4 MD links\DEV004-md-links\prueba/directorioprueba/*
+  let readFilePromises = [];
+  const files = readdirSync(absolutePath);//[directorioprueba]
+
+  files.forEach((file) => {
+    const path = `${absolutePath}/${file}`; // concatenamos el path del directorio con el nombre del archivo/directorio
+    //C:\Users\alexa\OneDrive\Escritorio\proyecto 4 MD links\DEV004-md-links\prueba/directorioprueba
+    if (directoryTrue(path)) {
+      const result = liDirectory(path); // recursividad
+    //  
+      readFilePromises = readFilePromises.concat(result);
+      console.log(`lista de directorio ${path}`, readFilePromises)
+      //
+    }
+  })
+  return readFilePromises;
+}*/
+const liDirectory = (absolutePath) => { //C:\Users\alexa\OneDrive\Escritorio\proyecto 4 MD links\DEV004-md-links\prueba/directorioprueba/*
+ 
+  const files = readdirSync(absolutePath);//[directorioprueba, prueba.md, prueba1.md, prueba1]
+
+}
 
 const validateLinks = (array) => {
   const total = array.map((elem) => {
@@ -91,12 +95,11 @@ const validateLinks = (array) => {
 
 export {
   isPath,
-  toAbsolute,
   getLinks,
   getstat,
   isMD,
   readAndGetFileLinks,
   validateLinks,
-  directoryTrue
-  //listDirectory,
+  directoryTrue,
+  liDirectory
 };
