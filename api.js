@@ -1,6 +1,6 @@
 import path from "path";
 import fs, { readFile, statSync, existsSync, readdirSync } from "fs";
-import fetch from "node-fetch";
+import "node-fetch";
 
 // path existe
 const isPath = (path) => existsSync(path);
@@ -17,10 +17,6 @@ const getstat = (absolutePath) => {
     });
   });
 };
-// es directorio
-const directoryTrue = (absolutePath) => {
-  return statSync(absolutePath).isDirectory();
-};
 
 //verifica si los archivos son MD
 const isMD = (file) => {
@@ -33,11 +29,11 @@ const getLinks = (data, absolutePath) => {
   // console.log(data.match(regex), '**************************');
   const match = data.match(regex);
   const links = [];
-  match.map((elem) => {
-    // console.log(elem, '-------------------------');
+  match.map((arr) => {
+    // console.log(arr, '-------------------------');
     links.push({
-      href: elem.match(/https*?:([^"')\s]+)/)[0], // url encontrada
-      text: elem.match(/\[(.*)\]/)[1], // texto que representa el enlace
+      href: arr.match(/https*?:([^"')\s]+)/)[0], // url encontrada
+      text: arr.match(/\[(.*)\]/)[1], // texto que representa el enlace
       file: absolutePath, // archivo en el que se encontró el enlace
     });
   });
@@ -56,24 +52,7 @@ const readAndGetFileLinks = (file) => {
     });
   });
 };
-//obtiene la lista de directorios
-/*const liDirectory = (absolutePath) => { //C:\Users\alexa\OneDrive\Escritorio\proyecto 4 MD links\DEV004-md-links\prueba/directorioprueba/*
-  let readFilePromises = [];
-  const files = readdirSync(absolutePath);//[directorioprueba]
 
-  files.forEach((file) => {
-    const path = `${absolutePath}/${file}`; // concatenamos el path del directorio con el nombre del archivo/directorio
-    //C:\Users\alexa\OneDrive\Escritorio\proyecto 4 MD links\DEV004-md-links\prueba/directorioprueba
-    if (directoryTrue(path)) {
-      const result = liDirectory(path); // recursividad
-    //  
-      readFilePromises = readFilePromises.concat(result);
-      console.log(`lista de directorio ${path}`, readFilePromises)
-      //
-    }
-  })
-  return readFilePromises;
-}*/
 const liDirectory = (absolutePath) => { //C:\Users\alexa\OneDrive\Escritorio\proyecto 4 MD links\DEV004-md-links\prueba/directorioprueba/*
  
   const files = readdirSync(absolutePath);//[directorioprueba, prueba.md, prueba1.md, prueba1]
@@ -81,17 +60,20 @@ const liDirectory = (absolutePath) => { //C:\Users\alexa\OneDrive\Escritorio\pro
 }
 
 const validateLinks = (array) => {
-  const total = array.map((elem) => {
-    return fetch(elem.href).then((res) => {
-      // console.log(res, '--------');
-      elem.status = res.status;
-      elem.statusText = res.statusText;
-      // console.log(elem, 'xxxxx');
-      return elem;
-    });
+  return new Promise((resolve) => {
+    fetch(array.href)
+      .then((res) => {
+        array.status = res.status;
+        array.ok = res.statusText;
+        resolve(array);
+      })
+      .catch((err) => {
+        array.status = err.status || 500;
+        array.ok = err.statusText || "Internal Server Error";
+        resolve(array);
+      });
   });
-  return Promise.all(total);
-};
+}
 
 export {
   isPath,
@@ -100,6 +82,5 @@ export {
   isMD,
   readAndGetFileLinks,
   validateLinks,
-  directoryTrue,
   liDirectory
 };

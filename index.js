@@ -5,6 +5,7 @@ import { argv } from "process"; // libreria para leer argumentos de la terminal
 // importo  mdLinks
 console.log("hola");
 
+
 const CLI = () => {
   const path = argv[2];
   const validate = argv.includes("--validate");
@@ -16,7 +17,7 @@ const CLI = () => {
       chalk.cyan(`Por favor, entrar a path ${chalk.yellow("--help")}.`)
     );
   } else if (help) {
-    {
+    
       console.log(chalk("Usage: md-link <path-to-file> [options]"));
       console.log(chalk.bold("\nOptions:"));
       console.log(chalk.green("\t only path"));
@@ -25,23 +26,25 @@ const CLI = () => {
       console.log(chalk.green("\t--validate --stats"));
       console.log("\n");
 
-      return;
-    }
-  } else if (path) {
-    mdLinks(path).then((links) =>
-      console.log(links))
-      .catch((err) => console.error(err));
-    
-  } else if (path && validate ){
-   mdLinks(path, {validate: true}).then((links)=>
-   console.log(links))
-   .catch((err) => console.error(err));
-  }
+    // ...
+  } else if (path  && !validate && !stats ) {
 
-  
-  
-}
-CLI()
+      mdLinks(path, {validate:false})
+        .then((links) => console.log(links))
+        .catch((err) => console.error(err));
+    
+  }
+  else if( path && validate && !stats ){
+    mdLinks(path, {validate:true})
+    .then((links) => console.log(links))
+    .catch((err) => console.error(err));
+
+  }
+};
+
+CLI();
+
+
 //const path = "./prueba/prueba1.md";
 /*const path = "./README.md";
 mdLinks(path)
