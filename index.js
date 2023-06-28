@@ -2,6 +2,7 @@
 import { mdLinks } from "./components.js";
 import chalk from "chalk";
 import { argv } from "process"; // libreria para leer argumentos de la terminal
+
 // importo  mdLinks
 console.log("hola");
 
@@ -29,24 +30,23 @@ const CLI = () => {
     mdLinks(path, { validate: false })
       .then((links) => console.log(links))
       .catch((err) => console.error(err));
-      //...Muestra path y validate
+    //...Muestra path y validate
   } else if (path && validate && !stats) {
     mdLinks(path, { validate: true })
       .then((links) => console.log(links))
       .catch((err) => console.error(err));
-      //..muestra validate y stats
+    //..muestra validate y stats
   } else if (!path && validate && stats) {
     mdLinks(path, { validate: true, stats: true })
-        .then((links) => {
-            console.log(chalk.yellowBright(`Total Links: ${stats.total}`));
-            console.log(chalk.underline.green(`Unique: ${stats.unique}`));
-            console.log(chalk.red(`Broken: ${stats.broken}\n`));
-        })
-        .catch((err) => {
-            console.log(`Error:${chalk.yellowBright(err)}`);
-        });
-      }
+      .then((stats) => {
+      console.log(chalk.yellowBright(`Total Links: ${stats.total}`));
+      console.log(chalk.underline.green(`Unique: ${stats.unique}`));
+      console.log(chalk.red(`Broken: ${stats.broken}\n`))
+      .catch((err) => {
+        console.log(`Error:${chalk.yellowBright(err)}`);
+      });
+    });
+  }
 };
 
 CLI();
-

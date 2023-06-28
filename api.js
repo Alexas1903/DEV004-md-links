@@ -3,6 +3,7 @@ import fs, { readFile, statSync, existsSync, readdirSync } from "fs";
 import "node-fetch";
 
 
+
 // path existe
 const isPath = (path) => existsSync(path);
 

@@ -9,6 +9,7 @@ import path from "path";
 import fs, { readdirSync } from "fs";
 import { totalStats } from "./totalStats.js";
 
+
 export const mdLinks = (route, options) => {
   const absolutePath = path.resolve(route);
   return new Promise((resolve, reject) => {
@@ -28,14 +29,7 @@ export const mdLinks = (route, options) => {
                   const linkPromises = array3props.map((link) => {
                     return validateLinks(link);
                   });
-                  /*if (options && options.stats) {
-                    const stats = linkPromises.then((linksToCalculate) =>
-                      totalStats(linksToCalculate, options.validate)
-                    );
-                    resolve(stats);
-                  } else {
-                    resolve(linkPromises);
-                  }*/
+            
                   // Esperar a que todas las promesas de validación se resuelvan
                   Promise.all(linkPromises)
                     .then((validatedLinks) => {
@@ -47,10 +41,16 @@ export const mdLinks = (route, options) => {
                   // Resolver la promesa principal con array3props si no se requiere validación
                   resolve(array3props);
                 }
+                if(options && options.stats){ 
+                  const stats = array3props.then(linksToCalculate => totalStats(linksToCalculate, options.validate));
+                  resolve(stats);
+                } else {
+                  resolve(array3props)
+                }
               })
               .catch((error) => reject(error));
-          } else {
-            resolve("Not an MD file");
+            }else {
+              resolve("Not an MD file");
           }
         } else if (stat.isDirectory()) {
           ///-------------------------------------------------------------------------------
